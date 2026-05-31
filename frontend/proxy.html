@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANTOSO-GRID - Proxy Checker</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📧</text></svg>">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>SANTOSO<span>-GRID</span></h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="/send" class="nav-item">
+                    <span class="icon">✉️</span>
+                    Send Email
+                </a>
+                <a href="/proxy" class="nav-item active">
+                    <span class="icon">🔄</span>
+                    Proxy Checker
+                </a>
+                <a href="/filter" class="nav-item">
+                    <span class="icon">🔍</span>
+                    Maillist Filter
+                </a>
+                <a href="/templates" class="nav-item">
+                    <span class="icon">📝</span>
+                    Templates
+                </a>
+            </nav>
+            <div class="server-status">
+                <div class="status-indicator online"></div>
+                <span>Server Online</span>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Proxy Checker</h2>
+            </header>
+            
+            <!-- Proxy Input -->
+            <div class="proxy-section">
+                <div class="form-group">
+                    <label>Import Proxies</label>
+                    <textarea id="proxyList" class="form-textarea large" placeholder="Paste proxy list here...&#10;Format: ip:port OR ip:port:user:pass&#10;Example:&#10;192.168.1.1:8080&#10;192.168.1.2:8080:user:pass"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <label class="file-label">
+                        <input type="file" id="proxyFile" accept=".txt" hidden>
+                        <span class="btn btn-secondary">📁 Upload File</span>
+                    </label>
+                    <button class="btn btn-primary" onclick="checkProxies()">
+                        🔍 Check Proxies
+                    </button>
+                    <button class="btn btn-success" onclick="downloadWorking()" id="downloadBtn" disabled>
+                        ⬇️ Download Working
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter Buttons -->
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterProxies('all')">All</button>
+                <button class="filter-btn success" onclick="filterProxies('working')">Working</button>
+                <button class="filter-btn danger" onclick="filterProxies('dead')">Dead</button>
+            </div>
+            
+            <!-- Results Table -->
+            <div class="results-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Proxy</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Response Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proxyTableBody">
+                        <tr>
+                            <td colspan="5" class="empty-state">No proxies checked yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Stats -->
+            <div class="proxy-stats">
+                <div class="stat-box">
+                    <span class="stat-number" id="totalProxies">0</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-box success">
+                    <span class="stat-number" id="workingProxies">0</span>
+                    <span class="stat-label">Working</span>
+                </div>
+                <div class="stat-box danger">
+                    <span class="stat-number" id="deadProxies">0</span>
+                    <span class="stat-label">Dead</span>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/proxy.js"></script>
+</body>
+</html>

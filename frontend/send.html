@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANTOSO-GRID - Send Email</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📧</text></svg>">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>SANTOSO<span>-GRID</span></h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="/send" class="nav-item active">
+                    <span class="icon">✉️</span>
+                    Send Email
+                </a>
+                <a href="/proxy" class="nav-item">
+                    <span class="icon">🔄</span>
+                    Proxy Checker
+                </a>
+                <a href="/filter" class="nav-item">
+                    <span class="icon">🔍</span>
+                    Maillist Filter
+                </a>
+                <a href="/templates" class="nav-item">
+                    <span class="icon">📝</span>
+                    Templates
+                </a>
+            </nav>
+            <div class="server-status">
+                <div class="status-indicator online"></div>
+                <span>Server Online</span>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Send Email</h2>
+            </header>
+            
+            <!-- Sender Form -->
+            <div class="sender-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>From Name</label>
+                        <input type="text" id="fromName" placeholder="Your Name" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>From Email</label>
+                        <input type="email" id="fromEmail" placeholder="sender@example.com" class="form-input">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Subject</label>
+                        <input type="text" id="subject" placeholder="Email Subject" class="form-input">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Content Type</label>
+                        <div class="toggle-container">
+                            <button class="toggle-btn active" data-type="text" onclick="setContentType('text')">TEXT</button>
+                            <button class="toggle-btn" data-type="html" onclick="setContentType('html')">HTML</button>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Message Content</label>
+                        <textarea id="content" placeholder="Write your message here..." class="form-textarea"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Maillist File</label>
+                        <input type="file" id="maillistFile" accept=".txt,.csv" class="form-input">
+                        <p class="help-text">One email per line</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Proxy Type</label>
+                        <select id="proxyType" class="form-select">
+                            <option value="">No Proxy</option>
+                            <option value="http">HTTP</option>
+                            <option value="socks4">SOCKS4</option>
+                            <option value="socks5">SOCKS5</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="startCampaign()">
+                        🚀 Start Campaign
+                    </button>
+                    <button class="btn btn-danger" onclick="stopCampaign()" id="stopBtn" disabled>
+                        ⬛ Stop
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Live Monitor -->
+            <div class="monitor-panel">
+                <h3>📡 Live Monitor</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+                <div class="stats-row">
+                    <div class="stat">
+                        <span class="label">Sent</span>
+                        <span class="value success" id="sentCount">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Failed</span>
+                        <span class="value danger" id="failedCount">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Remaining</span>
+                        <span class="value" id="remainingCount">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Speed</span>
+                        <span class="value" id="sendingSpeed">0/hr</span>
+                    </div>
+                </div>
+                <div class="current-email">
+                    <span class="label">Current:</span>
+                    <span id="currentEmail">-</span>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/sender.js"></script>
+</body>
+</html>

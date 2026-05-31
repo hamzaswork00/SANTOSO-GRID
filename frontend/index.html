@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANTOSO-GRID - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📧</text></svg>">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>SANTOSO<span>-GRID</span></h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item active">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="/send" class="nav-item">
+                    <span class="icon">✉️</span>
+                    Send Email
+                </a>
+                <a href="/proxy" class="nav-item">
+                    <span class="icon">🔄</span>
+                    Proxy Checker
+                </a>
+                <a href="/filter" class="nav-item">
+                    <span class="icon">🔍</span>
+                    Maillist Filter
+                </a>
+                <a href="/templates" class="nav-item">
+                    <span class="icon">📝</span>
+                    Templates
+                </a>
+            </nav>
+            <div class="server-status">
+                <div class="status-indicator online"></div>
+                <span>Server Online</span>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Dashboard</h2>
+                <div class="header-actions">
+                    <span class="time" id="currentTime"></span>
+                </div>
+            </header>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">✉️</div>
+                    <div class="stat-info">
+                        <h3>Total Sent</h3>
+                        <p class="stat-value" id="totalSent">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-info">
+                        <h3>Speed</h3>
+                        <p class="stat-value" id="speed">0/hr</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-info">
+                        <h3>Campaigns</h3>
+                        <p class="stat-value" id="campaigns">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-info">
+                        <h3>Templates</h3>
+                        <p class="stat-value" id="templates">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="section">
+                <h3>Quick Actions</h3>
+                <div class="actions-grid">
+                    <a href="/send" class="action-card">
+                        <span class="action-icon">✉️</span>
+                        <span>New Campaign</span>
+                    </a>
+                    <a href="/proxy" class="action-card">
+                        <span class="action-icon">🔄</span>
+                        <span>Check Proxies</span>
+                    </a>
+                    <a href="/filter" class="action-card">
+                        <span class="action-icon">🔍</span>
+                        <span>Filter List</span>
+                    </a>
+                    <a href="/templates" class="action-card">
+                        <span class="action-icon">📝</span>
+                        <span>Manage Templates</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="section">
+                <h3>Recent Campaigns</h3>
+                <div class="activity-list" id="recentCampaigns">
+                    <div class="empty-state">
+                        <p>No campaigns yet. Start your first campaign!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/app.js"></script>
+    <script>
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                document.getElementById('totalSent').textContent = data.total_sent.toLocaleString();
+                document.getElementById('campaigns').textContent = data.campaigns.length;
+                document.getElementById('templates').textContent = data.templates;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        loadStats();
+    </script>
+</body>
+</html>

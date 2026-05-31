@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANTOSO-GRID - Templates</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📧</text></svg>">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>SANTOSO<span>-GRID</span></h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">
+                    <span class="icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="/send" class="nav-item">
+                    <span class="icon">✉️</span>
+                    Send Email
+                </a>
+                <a href="/proxy" class="nav-item">
+                    <span class="icon">🔄</span>
+                    Proxy Checker
+                </a>
+                <a href="/filter" class="nav-item">
+                    <span class="icon">🔍</span>
+                    Maillist Filter
+                </a>
+                <a href="/templates" class="nav-item active">
+                    <span class="icon">📝</span>
+                    Templates
+                </a>
+            </nav>
+            <div class="server-status">
+                <div class="status-indicator online"></div>
+                <span>Server Online</span>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h2>Templates Manager</h2>
+                <button class="btn btn-primary" onclick="openTemplateModal()">
+                    ➕ New Template
+                </button>
+            </header>
+            
+            <!-- Templates Grid -->
+            <div class="templates-grid" id="templatesGrid">
+                <div class="empty-state">
+                    <p>No templates yet. Create your first template!</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Template Modal -->
+    <div class="modal" id="templateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Template</h3>
+                <button class="modal-close" onclick="closeTemplateModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Template Name</label>
+                    <input type="text" id="templateName" class="form-input" placeholder="My Template">
+                </div>
+                <div class="form-group">
+                    <label>Content Type</label>
+                    <div class="toggle-container">
+                        <button class="toggle-btn active" data-type="text" onclick="setTemplateType('text')">TEXT</button>
+                        <button class="toggle-btn" data-type="html" onclick="setTemplateType('html')">HTML</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Content</label>
+                    <textarea id="templateContent" class="form-textarea" placeholder="Write your template content..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTemplateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveTemplate()">💾 Save Template</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Template Preview</h3>
+                <button class="modal-close" onclick="closePreviewModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="previewFrame" class="preview-frame"></iframe>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load templates on page load
+        async function loadTemplates() {
+            try {
+                const response = await fetch('/api/templates/list');
+                const data = await response.json();
+                renderTemplates(data.templates);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        function renderTemplates(templates) {
+            const grid = document.getElementById('templatesGrid');
+            
+            if (!templates || templates.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><p>No templates yet. Create your first template!</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = templates.map(t => `
+                <div class="template-card">
+                    <div class="template-header">
+                        <h4>${t.name}</h4>
+                        <span class="template-type">${t.content_type.toUpperCase()}</span>
+                    </div>
+                    <div class="template-preview">${t.content.substring(0, 100)}...</div>
+                    <div class="template-actions">
+                        <button class="btn btn-sm btn-primary" onclick="previewTemplate(${t.id})">👁 Preview</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTemplate(${t.id})">🗑 Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function openTemplateModal() {
+            document.getElementById('templateModal').style.display = 'flex';
+        }
+        
+        function closeTemplateModal() {
+            document.getElementById('templateModal').style.display = 'none';
+        }
+        
+        async function saveTemplate() {
+            const name = document.getElementById('templateName').value;
+            const content = document.getElementById('templateContent').value;
+            const contentType = document.querySelector('#templateModal .toggle-btn.active').dataset.type;
+            
+            if (!name || !content) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/templates/save', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name, content, content_type: contentType})
+                });
+                
+                closeTemplateModal();
+                loadTemplates();
+            } catch (e) {
+                alert('Error saving template');
+            }
+        }
+        
+        async function previewTemplate(id) {
+            try {
+                const response = await fetch(`/api/templates/load?id=${id}`);
+                const data = await response.json();
+                
+                const frame = document.getElementById('previewFrame');
+                frame.srcdoc = data.template.content;
+                
+                document.getElementById('previewModal').style.display = 'flex';
+            } catch (e) {
+                alert('Error loading template');
+            }
+        }
+        
+        function closePreviewModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+        
+        async function deleteTemplate(id) {
+            if (!confirm('Delete this template?')) return;
+            
+            try {
+                await fetch(`/api/templates/delete?id=${id}`, {method: 'DELETE'});
+                loadTemplates();
+            } catch (e) {
+                alert('Error deleting template');
+            }
+        }
+        
+        function setTemplateType(type) {
+            const btns = document.querySelectorAll('#templateModal .toggle-btn');
+            btns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+        }
+        
+        // Load on start
+        loadTemplates();
+    </script>
+</body>
+</html>
